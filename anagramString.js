@@ -1,34 +1,21 @@
 var findAnagrams = function(s, p) {
-    if (p.length > s.length) return [];
-    var map = {};
-    var result = [];
+    var map = {}, result = [], count = 0;
     s = s.split(''); p = p.split('');
-
     p.forEach(letter => {
-        map[letter] = map[letter] || [0, 0];
-        map[letter][0]++;
+        map[letter] = map[letter] || 0;
+        map[letter]--;
     })
-
-    var count = 0;
     var size = Object.keys(map).length;
-    
     var change = (letter, action) => {
-        if (!map[letter]) return;
-        var pair = map[letter];
-        var wasMatched = false;
-        if (pair[0] === pair[1]) wasMatched = true;
-        action === 'up' ? pair[1]++ : pair[1]--;
-        pair[0] === pair[1] ? count++ : wasMatched ? count-- : null;
-
+        if (map[letter] === undefined) return;
+        var wasMatched = map[letter] === 0;
+        action === 'up' ? map[letter]++ : map[letter]--;
+        map[letter] === 0 ? count++ : wasMatched ? count-- : null;
     }
-
-    p.forEach( (l, i) => change(s[i], 'up'))
-    count === size && result.push(0);
-
-    for (var i = 1; i < s.length - p.length + 1; i++) {
-        change(s[i + p.length - 1], 'up');
-        change(s[i - 1], 'down');
-        count === size && result.push(i);
+    for (var i = 0; i < s.length; i++) {
+        change(s[i], 'up');
+        i >= p.length ? change(s[i - p.length], 'down') : null;
+        count === size ? result.push(i-p.length+1) : null;
     }
     return result; 
 };
